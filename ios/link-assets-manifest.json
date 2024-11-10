@@ -1,0 +1,29 @@
+{
+  "migIndex": 1,
+  "data": [
+    {
+      "path": "assets/fonts/FuzzyBubblesBold.ttf",
+      "sha1": "57062efded86f67fc7c122f01f3eba08f65f6bb4"
+    },
+    {
+      "path": "assets/fonts/FuzzyBubblesRegular.ttf",
+      "sha1": "61be2e9e6954191b78155577952adf894c19f8e7"
+    },
+    {
+      "path": "assets/icons/background.png",
+      "sha1": "32adaa172a0ff1676d469eaf7239fb60ca73b336"
+    },
+    {
+      "path": "assets/icons/logo_azul.png",
+      "sha1": "3d6ca8ba07e7204d1dd1659ed89857aa8b22c2d9"
+    },
+    {
+      "path": "assets/icons/logo_google.png",
+      "sha1": "b4884b8ec6645a40df98b0cd0774663d8905d121"
+    },
+    {
+      "path": "assets/icons/separador_o.png",
+      "sha1": "fdbeb68b878b60f531487cbf02ecebe882dd6674"
+    }
+  ]
+}

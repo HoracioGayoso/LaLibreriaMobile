@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "891967926467",
+    "firebase_url": "https://proyecto-final-la-libreria-default-rtdb.firebaseio.com",
+    "project_id": "proyecto-final-la-libreria",
+    "storage_bucket": "proyecto-final-la-libreria.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:891967926467:android:66ebcf42d208f919ec7276",
+        "android_client_info": {
+          "package_name": "com.lalibreriamobile"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "891967926467-cun4fifhdrjkkjgiqlgsbvo7klsdkpa1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB5RklmMnT6xfEDbTXZm3B1D-EfK0MYWKU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "891967926467-ah34e02josdukdb2tp6j7v3uikcj8bpa.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
