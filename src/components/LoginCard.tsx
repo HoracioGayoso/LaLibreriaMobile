@@ -8,7 +8,7 @@ import { useNavigation } from '@react-navigation/native'; // Importa useNavigati
 
 type RootStackParamList = {
     Login: undefined;
-    HomeScreen: undefined;
+    Home: undefined;
 };
 type LoginScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Login'>;
 
@@ -23,7 +23,7 @@ const LoginCard: React.FC = () => {
     const handleSignIn = async () => {
         try {
             await Auth.signIn(email, password);
-            navigation.navigate('HomeScreen'); // Navega a Home si el inicio de sesión es exitoso
+            navigation.navigate('Home'); // Navega a Home si el inicio de sesión es exitoso
         } catch (error) {
             console.error("Error during sign in:", error);
             // Aquí podrías mostrar un mensaje de error al usuario
@@ -33,16 +33,9 @@ const LoginCard: React.FC = () => {
     const handleGoogleSignIn = async () => {
         try {
             const user = await Auth.signInWithGoogle(); // Obtén el usuario de Google
-        
             if (user) {
-                const email = user.email; // Obtén el correo electrónico del usuario de Google
-                const userRecord = await Auth.fetchUserByEmail(email); // Función que verifica si el usuario existe
-        
-                if (userRecord) {
-                    navigation.navigate('HomeScreen'); // Navega a Home si el usuario existe
-                } else {
-                    alert('El correo electrónico ya está registrado con una cuenta de email y contraseña. Por favor inicie sesión con esas credenciales.');
-                }
+                console.log(user)
+                navigation.navigate('Home'); // Navega a Home si el usuario existe
             }
         } catch (error) {
             console.error("Error during Google sign in:", error);

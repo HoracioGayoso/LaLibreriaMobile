@@ -1,4 +1,7 @@
 {
   "name": "LaLibreriaMobile",
-  "displayName": "LaLibreriaMobile"
+  "displayName": "LaLibreriaMobile",
+  "android": {
+    "package": "com.lalibreriamobile"
+  }
 }

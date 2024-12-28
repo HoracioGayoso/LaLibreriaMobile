@@ -9,9 +9,12 @@ export const strings = {
       loginButton: "Ingresá",
     },
     homeScreen: {
-      welcomeBack: "¡Bienvenido de nuevo!",
-      browseCatalog: "Explorá nuestro catálogo",
-      contactUs: "Contactanos",
+      welcome: "Bienvenido, ",
+      alerts: "Ver Alertas",
+      products: "Ver productos",
+      loadPrices: "Cargar precios",
+      logout: "Salir",
+      searchOrAddProduct: "Buscá o agregá un producto"
     },
     // Add more screens and their strings here as needed
   };

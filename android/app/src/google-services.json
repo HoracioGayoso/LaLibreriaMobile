@@ -15,7 +15,15 @@
       },
       "oauth_client": [
         {
-          "client_id": "891967926467-cun4fifhdrjkkjgiqlgsbvo7klsdkpa1.apps.googleusercontent.com",
+          "client_id": "891967926467-1gikbm7b6a2fu58q0ft55fcuosc753h3.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.lalibreriamobile",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "891967926467-525ov2piov262ff6b3fs2tt9kgknccmq.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
@@ -28,7 +36,7 @@
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "891967926467-ah34e02josdukdb2tp6j7v3uikcj8bpa.apps.googleusercontent.com",
+              "client_id": "891967926467-525ov2piov262ff6b3fs2tt9kgknccmq.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

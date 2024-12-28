@@ -1,7 +1,16 @@
 module.exports = {
-    project: {
-      ios: {},
-      android: {},
+  project: {
+    ios: {},
+    android: {
+      packageName: 'com.lalibreriamobile', // Reemplaza con tu nombre de paquete
     },
-    assets: ['./assets/fonts', './assets/icons'], // adjust according to your path
-  };
+  },
+  dependencies: {
+    "@react-native-google-signin/google-signin": {
+      platforms: {
+        android: null, // Deshabilita autolinking para Android
+      },
+    },
+  },
+  assets: ['./assets/fonts', './assets/icons'], // Ajusta las rutas según sea necesario
+};
