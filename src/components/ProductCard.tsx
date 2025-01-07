@@ -5,10 +5,10 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../types';
 import { useNavigation } from '@react-navigation/native';
 
-type ProductoCardNavigationProp = StackNavigationProp<RootStackParamList, 'Producto'>;
+type ProductCardNavigationProp = StackNavigationProp<RootStackParamList, 'Producto'>;
 
-const ProductoCard: React.FC<ProductCardProps> = ({ product }) => {
-  const navigation = useNavigation<ProductoCardNavigationProp>();
+const ProductCard: React.FC<ProductCardProps> = ({ product, editProduct }) => {
+  const navigation = useNavigation<ProductCardNavigationProp>();
 
   return (
     <View style={styles.card}>
@@ -42,7 +42,7 @@ const ProductoCard: React.FC<ProductCardProps> = ({ product }) => {
             </View>
             <View style={styles.infoRow}>
             <Text style={styles.label}>Precio Mayorista: </Text>
-            <Text style={styles.data}>${product.prize?.toFixed(2)}</Text>
+            <Text style={styles.data}>${product.price?.toFixed(2)}</Text>
             </View>
             <View style={styles.infoRow}>
             <Text style={styles.label}>Margen de ganancia: </Text>
@@ -56,7 +56,7 @@ const ProductoCard: React.FC<ProductCardProps> = ({ product }) => {
 
         {/* Botones */}
         <View style={styles.buttonContainer}>
-            <TouchableOpacity style={[styles.button, styles.editButton]}>
+            <TouchableOpacity style={[styles.button, styles.editButton]} onPress={editProduct}>
             <Image source={require('../../assets/icons/pencil-line.png')} style={styles.buttonIcon} />
             <Text style={styles.buttonText}>Editar</Text>
             </TouchableOpacity>
@@ -175,4 +175,4 @@ const styles = StyleSheet.create({
     },
   });
 
-export default ProductoCard;
+export default ProductCard;

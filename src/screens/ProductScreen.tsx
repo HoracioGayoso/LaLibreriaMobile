@@ -4,7 +4,9 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../types';
 import Background from '../components/Background';
 import { RouteProp } from '@react-navigation/native';
-import  ProductoCard from '../components/ProductoCard'
+import ProductCard from '../components/ProductCard';
+import EditProductCard from '../components/EditProductCard';
+
 type ProductoScreenRouteProp = RouteProp<RootStackParamList, 'Producto'>;
 type ProductoScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Producto'>;
 
@@ -12,23 +14,23 @@ type Props = {
   route: ProductoScreenRouteProp;
   navigation: ProductoScreenNavigationProp;
 };
+
 const ProductoScreen: React.FC<Props> = ({ route }) => {
-  const { barcode } = route.params; // Obtener el código de barras desde los parámetros
+  const { barcode } = route.params;
   const [product, setProduct] = useState<any>(null);
+  const [isEditing, setIsEditing] = useState(false);
+
   useEffect(() => {
-    // Aquí puedes reemplazarlo con una llamada a la API o consulta a una base de datos
     const fetchProduct = async () => {
       const fakeDatabase = [
         {
           barcode: barcode,
           name: 'Caja BIC Azul x50u',
           provider_name: 'El Once',
-          prize: 1000.0,
+          price: 1000.0,
           profitMargin: 70,
           current_stock: 12,
-          image: 'https://example.com/image.jpg',
         },
-        // Agregar más productos si es necesario
       ];
   
       const foundProduct = fakeDatabase.find((item) => item.barcode === barcode);
@@ -37,10 +39,24 @@ const ProductoScreen: React.FC<Props> = ({ route }) => {
   
     fetchProduct();
   }, [barcode]);
+
+  const handleEditProduct = () => {
+    setIsEditing(true);
+  };
+
+  const handleSaveProduct = (updatedProduct: any) => {
+    setProduct(updatedProduct);
+    setIsEditing(false);
+  };
+
   return (
     <Background>
       {product ? (
-        <ProductoCard product={product} />
+        isEditing ? (
+          <EditProductCard product={product} saveProduct={handleSaveProduct} />
+        ) : (
+          <ProductCard product={product} editProduct={handleEditProduct} />
+        )
       ) : (
         <View style={styles.notFoundContainer}>
           <Text style={styles.notFoundText}>Producto no encontrado para el código: {barcode}</Text>
@@ -51,12 +67,6 @@ const ProductoScreen: React.FC<Props> = ({ route }) => {
 };
 
 const styles = StyleSheet.create({
-  loadingText: {
-    textAlign: 'center',
-    marginTop: 20,
-    fontSize: 16,
-    color: '#333',
-  },
   notFoundContainer: {
     flex: 1,
     justifyContent: 'center',

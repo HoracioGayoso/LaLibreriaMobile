@@ -8,7 +8,7 @@ const BarcodeScannerCard: React.FC<BarcodeScannerCardProps> = ({ isScanning, onB
 
 
   const codeScanner: CodeScanner = useCodeScanner({
-    codeTypes: ['ean-13', 'ean-8', 'code-39', 'code-128', 'codabar', 'upc-a', 'upc-e', 'itf'],
+    codeTypes: ['ean-13', 'ean-8', 'code-39', 'code-128', 'codabar', 'upc-a', 'upc-e', 'itf', 'qr'],
     onCodeScanned: (codes) => {
       if (codes.length > 0 && isScanning) {
         const scannedCode = codes[0].value;
@@ -31,7 +31,7 @@ const BarcodeScannerCard: React.FC<BarcodeScannerCardProps> = ({ isScanning, onB
       <Camera
         style={StyleSheet.absoluteFill}
         device={device}
-        isActive={true}
+        isActive={isScanning}
         codeScanner={isScanning ? codeScanner : undefined}
       />
     </View>

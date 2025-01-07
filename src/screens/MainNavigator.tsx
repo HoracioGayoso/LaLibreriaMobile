@@ -5,7 +5,7 @@ import HomeScreen from '../screens/HomeScreen';
 import LoginScreen from '../screens/LoginScreen';
 import BarcodeScannerScreen from '../screens/BarcodeScannerScreen';
 import { RootStackParamList } from 'types';
-import ProductoScreen from './ProductoScreen';
+import ProductScreen from './ProductScreen';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -29,7 +29,7 @@ const AppNavigator = () => {
       />
       <Stack.Screen 
         name="Producto" 
-        component={ProductoScreen} 
+        component={ProductScreen} 
         options={{ headerShown: false }}
       />
     </Stack.Navigator>

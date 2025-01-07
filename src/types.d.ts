@@ -14,21 +14,18 @@ interface BarcodeScannerCardProps {
 }
 
 declare interface ProductCardProps {
-  product: {
-    id: string,
-    name: string,
-    barcode: string,
-    description?: string,
-    prize?: number,
-    profitMargin?: number,
-    min_stock?: number,
-    current_stock?: number, 
-    category_name?: string,
-    provider_name?: string,
-    image?: string,
-    is_active?: boolean,
-    created_at?: Date,
-    updated_at?: Date
-  };
+  product: Product;
+  editProduct: () => void;
 }
+
+declare interface EditProductCardProps {
+  product: Product;
+  saveProduct: (product: Product) => void;
+  }
+declare interface ImageCardProps {
+  productImage: string;
+  onClose: () => void;
+  onUpdateImage: (image: string) => void;
+}
+
 

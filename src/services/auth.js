@@ -53,7 +53,9 @@ const signInWithGoogle = async () => {
     try {
         await GoogleSignin.hasPlayServices();
         const signInResult = await GoogleSignin.signIn();
+        console.log("signIn Result:", signInResult);
         let idToken = signInResult.data?.idToken;
+        console.log("idToken: ", idToken);
         if (!idToken) {
             idToken = signInResult.idToken; // Fallback for older versions
         }
