@@ -8,7 +8,7 @@ export function formatPrice(value) {
 export function unformatPrice(formattedValue) {
     // Eliminar el símbolo de moneda y los puntos como separadores de miles
     const numericValue = formattedValue
-      .replace('₱', '')           // Elimina el símbolo de la moneda (puedes ajustarlo dependiendo del símbolo)
+      .replace(/[^0-9,.-]/g, '') 
       .replace(/\./g, '')         // Elimina los puntos (separadores de miles)
       .replace(',', '.');         // Reemplaza la coma decimal por punto
   

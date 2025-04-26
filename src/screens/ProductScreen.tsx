@@ -30,6 +30,9 @@ const ProductoScreen: React.FC<Props> = ({ route }) => {
           price: 1000.0,
           profitMargin: 70,
           current_stock: 12,
+          image: null,
+          unit: 'Cajas',
+          //category_name: 'Categoria 2'
         },
       ];
   
@@ -47,6 +50,7 @@ const ProductoScreen: React.FC<Props> = ({ route }) => {
   const handleSaveProduct = (updatedProduct: any) => {
     setProduct(updatedProduct);
     setIsEditing(false);
+    console.log("product", product)
   };
 
   return (

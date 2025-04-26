@@ -17,7 +17,11 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, editProduct }) => {
   {/* Imagen del producto */}
   <View style={styles.imageContainer}>
     <Image
-      source={require('../../assets/icons/product-placeholder.png')} // Cambia a la imagen del producto real
+      source={
+        product.image 
+          ? { uri: product.image } // Envolvemos la URI en un objeto con la clave `uri`
+          : require('../../assets/icons/product-placeholder.png') // Imagen de placeholder
+      }
       style={styles.productImage}
       resizeMode="contain"
     />
@@ -30,7 +34,6 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, editProduct }) => {
   </View>
 </View>
 
-      {/* Información del producto */}
         <View style={styles.infoContainer}>
             <View style={styles.infoRow}>
             <Text style={styles.label}>Nombre: </Text>

@@ -9,6 +9,7 @@ import {
   Modal, // Importa Modal
 } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
+import { Dropdown } from 'react-native-element-dropdown';
 import { EditProductCardProps } from 'types';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../types';
@@ -18,6 +19,7 @@ import ImageCard from './ImageCard';
 type ProductCardNavigationProp = StackNavigationProp<RootStackParamList, 'Producto'>;
 
 const EditProductCard: React.FC<EditProductCardProps> = ({ product, saveProduct }) => {
+  console.log('Product recibido:', product); // 👈🏽 Este log te muestra qué llega
   const navigation = useNavigation<ProductCardNavigationProp>();
   const [name, setName] = useState(product?.name || '');
   const [barcode, setBarcode] = useState(product?.barcode || '');
@@ -26,6 +28,7 @@ const EditProductCard: React.FC<EditProductCardProps> = ({ product, saveProduct 
   const [margin, setMargin] = useState(product?.profitMargin && !isNaN(product.profitMargin) ? formatMargin(product.profitMargin.toString()) : '');
   const [stock, setStock] = useState(product?.current_stock || '');
   const [unit, setUnit] = useState(product?.unit || '');
+  const [category, setCategory] = useState(product?.category_name || '');
   const [image, setImage] = useState(product?.image || null);
   const [showImageModal, setShowImageModal] = useState(false);
   const saveChanges = () => {
@@ -33,12 +36,15 @@ const EditProductCard: React.FC<EditProductCardProps> = ({ product, saveProduct 
       ...product, 
       name, 
       barcode, 
-      provider, 
+      provider_name: provider, 
       price: unformatPrice(price),
       profitMargin: unformatMargin(margin),
       current_stock: stock, 
-      unit 
+      unit,
+      image,
+      category_name: category
     };
+    console.log("aca: ", updatedProduct)
     saveProduct(updatedProduct);
   };
 
@@ -73,6 +79,22 @@ const EditProductCard: React.FC<EditProductCardProps> = ({ product, saveProduct 
     console.log('click close image modal');
     setShowImageModal(false);
   };
+  const providerData = [
+    { label: 'El Once', value: 'El Once' },
+    { label: 'Otro Proveedor', value: 'Otro Proveedor' },
+  ];
+  
+  const unitData = [
+    { label: 'Cajas', value: 'Cajas' },
+    { label: 'Unidades', value: 'Unidades' },
+    { label: 'Resmas', value: 'Resmas'}
+  ];
+  const categoryData = [
+    { label: 'Categoria 1', value: 'Categoria 1' },
+    { label: 'Categoria 2', value: 'Categoria 2' },
+    { label: 'Categoria 3', value: 'Categoria 3' }
+  ];
+  
   return (
     <View style={styles.card}>
       <Text style={styles.title}>Producto #{product?.barcode}</Text>
@@ -99,18 +121,56 @@ const EditProductCard: React.FC<EditProductCardProps> = ({ product, saveProduct 
           />
         </View>
       </View>
-
+      
+      {/* Categoria */}
+      <Text style={styles.label}>Categoria</Text>
+      <View style={styles.pickerContainer}>
+      <Dropdown
+        data={categoryData}
+        labelField="label"
+        valueField="value"
+        value={category}
+        placeholder="Selecciona una categoria"
+        onChange={item => setCategory(item.value)}
+        placeholderStyle={styles.placeholderStyle}
+        selectedTextStyle={styles.selectedTextStyle}
+        style={styles.dropdown}
+        renderItem={(item: { label: string; value: string }, selected?: boolean) => {
+          const index = categoryData.findIndex(p => p.value === item.value);
+          const isLast = index === categoryData.length - 1;
+        
+          return (
+            <View style={[styles.dropdownItem, isLast && styles.noBorder]}>
+              <Text style={styles.itemTextStyle}>{item.label}</Text>
+            </View>
+          );
+        }}
+      />
+      </View>
       {/* Proveedor */}
       <Text style={styles.label}>Proveedor</Text>
       <View style={styles.pickerContainer}>
-        <Picker
-          selectedValue={provider}
-          onValueChange={(itemValue) => setProvider(itemValue)}
-          style={styles.picker}
-        >
-          <Picker.Item label="El Once" value="El Once" />
-          <Picker.Item label="Otro Proveedor" value="Otro Proveedor" />
-        </Picker>
+      <Dropdown
+        data={providerData}
+        labelField="label"
+        valueField="value"
+        value={provider}
+        placeholder="Selecciona un proveedor"
+        onChange={item => setProvider(item.value)}
+        placeholderStyle={styles.placeholderStyle}
+        selectedTextStyle={styles.selectedTextStyle}
+        style={styles.dropdown}
+        renderItem={(item: { label: string; value: string }, selected?: boolean) => {
+          const index = providerData.findIndex(p => p.value === item.value);
+          const isLast = index === providerData.length - 1;
+        
+          return (
+            <View style={[styles.dropdownItem, isLast && styles.noBorder]}>
+              <Text style={styles.itemTextStyle}>{item.label}</Text>
+            </View>
+          );
+        }}
+      />
       </View>
 
       {/* Precio Mayorista */}
@@ -153,14 +213,27 @@ const EditProductCard: React.FC<EditProductCardProps> = ({ product, saveProduct 
         <View style={styles.unitContainer}>
           <Text style={styles.label}>Unidad</Text>
           <View style={styles.pickerContainer}>
-            <Picker
-              selectedValue={unit}
-              onValueChange={(itemValue) => setUnit(itemValue)}
-              style={styles.picker}
-            >
-              <Picker.Item label="Cajas" value="Cajas" />
-              <Picker.Item label="Unidades" value="Unidades" />
-            </Picker>
+          <Dropdown
+            data={unitData}
+            labelField="label"
+            valueField="value"
+            value={unit}
+            placeholder="Selecciona una unidad"
+            onChange={item => setUnit(item.value)}
+            placeholderStyle={styles.placeholderStyle}
+            selectedTextStyle={styles.selectedTextStyle}
+            style={styles.dropdown}
+            renderItem={(item: { label: string; value: string }, selected?: boolean) => {
+              const index = unitData.findIndex(p => p.value === item.value);
+              const isLast = index === unitData.length - 1;
+            
+              return (
+                <View style={[styles.dropdownItem, isLast && styles.noBorder]}>
+                  <Text style={styles.itemTextStyle}>{item.label}</Text>
+                </View>
+              );
+            }}
+          />
           </View>
         </View>
       </View>
@@ -265,17 +338,44 @@ const styles = StyleSheet.create({
     flex:1,
   },
   pickerContainer: {
-    backgroundColor: '#fff',
     borderWidth: 2,
     borderColor: '#ccc',
     borderRadius: 12,
-    justifyContent: 'center',
-    paddingHorizontal: 20,
+    backgroundColor: '#fff',
+    overflow: 'hidden',
   },
-  picker: {
+  dropdown: {
     height: 50,
+    paddingHorizontal: 12,
+    backgroundColor: '#fff',
+  },
+  placeholderStyle: {
+    fontSize: 16,
+    color: '#999',
+    fontFamily: 'Inter',
+  },
+  selectedTextStyle: {
+    fontSize: 16,
     color: '#000',
     fontFamily: 'Inter',
+  },
+  itemTextStyle: {
+    fontSize: 16,
+    color: '#000',
+    fontFamily: 'Inter',
+    borderRadius: 12,
+    borderColor: "#ccc"
+  },
+  dropdownItem: {
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
+    backgroundColor: '#fff',
+    borderStyle: 'dashed',
+  },
+  noBorder: {
+    borderBottomWidth: 0,
   },
   rowContainer: {
     flexDirection: 'row',
@@ -307,9 +407,9 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     elevation: 10,
     shadowColor: '#000',
-    shadowOpacity: 0.15, // Reduced opacity
-    shadowOffset: { width: 0, height: 2 }, // Reduced shadow offset
-    shadowRadius: 5, // Reduced blur radius
+    shadowOpacity: 0.15,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 5,
   },
   saveButton: {
     marginTop: 10,
