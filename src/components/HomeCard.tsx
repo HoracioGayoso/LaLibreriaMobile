@@ -88,16 +88,16 @@ const styles = StyleSheet.create({
         elevation: 5,
     },
     alertButton: {
-        backgroundColor: '#F47272', // Rojo
+        backgroundColor: '#CD5352', // Rojo
     },
     productButton: {
-        backgroundColor: '#6E83F2', // Azul
+        backgroundColor: '#6371B2', // Azul
     },
     pricesButton: {
-        backgroundColor: '#FFD65C', // Amarillo
+        backgroundColor: '#F1C938', // Amarillo
     },
     exitButton: {
-        backgroundColor: '#82C79D', // Verde
+        backgroundColor: '#85BFA9', // Verde
     },
     buttonText: {
         fontSize: 14,

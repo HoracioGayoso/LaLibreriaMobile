@@ -37,7 +37,7 @@ const BarcodeScannerScreen: React.FC = () => {
         );
       }
     };
-
+    console.log(scannedCode)
     getPermissions();
   }, [navigation]);
 

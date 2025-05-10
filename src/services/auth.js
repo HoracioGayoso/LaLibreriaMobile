@@ -1,6 +1,5 @@
 import auth, { getAuth, fetchSignInMethodsForEmail } from '@react-native-firebase/auth';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
-import { Platform } from 'react-native';
 import { WEB_CLIENT_ID } from '@env';
 
 GoogleSignin.configure({
