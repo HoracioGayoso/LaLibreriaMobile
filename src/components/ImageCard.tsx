@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image, Alert, Modal } from 'react-native';
-import { useNavigation } from '@react-navigation/native'; 
+import { useNavigation } from '@react-navigation/native';
 import { ImageCardProps } from 'types';
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import { RootStackParamList } from 'types';
 import { StackNavigationProp } from '@react-navigation/stack';
 import FullScreenImage from './FullScreenImage';
 
-type ProductCardNavigationProp = StackNavigationProp<RootStackParamList, 'Producto'>;
+type ProductCardNavigationProp = StackNavigationProp<RootStackParamList, 'Product'>;
 
 const ImageCard: React.FC<ImageCardProps> = ({ productImage, onClose, onUpdateImage }) => {
     const navigation = useNavigation<ProductCardNavigationProp>();
@@ -117,8 +117,8 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
         borderRadius: 12,
         alignItems: 'center',
-      },
-      imageContainer: {
+    },
+    imageContainer: {
         alignItems: 'center',
         marginBottom: 30,
         marginRight: 10,
@@ -128,21 +128,21 @@ const styles = StyleSheet.create({
         height: 80,
         width: 80,
         justifyContent: 'center',
-      },
-      productImage: {
+    },
+    productImage: {
         width: 60,
         height: 60,
-      },
-      placeholderImage: {
+    },
+    placeholderImage: {
         width: 30,
         height: 30,
-      },
-      buttonContainer: {
+    },
+    buttonContainer: {
         flexDirection: 'column',
         justifyContent: 'space-between',
         width: '100%',
-      },
-      button: {
+    },
+    button: {
         flexDirection: 'row',
         alignItems: 'center',
         paddingVertical: 12,
@@ -154,31 +154,31 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.15,
         shadowOffset: { width: 0, height: 2 },
         shadowRadius: 5,
-        
-      },
-      viewImageButton: {
+
+    },
+    viewImageButton: {
         backgroundColor: '#F1C938',
-      },
-      loadImageButton: {
+    },
+    loadImageButton: {
         backgroundColor: '#CD5352',
-      },
-      takeImageButton: {
+    },
+    takeImageButton: {
         backgroundColor: '#6371B2',
-      },
-      backButton: {
+    },
+    backButton: {
         backgroundColor: '#85BFA9',
-      },
-      buttonText: {
+    },
+    buttonText: {
         color: 'white',
         fontWeight: 'bold',
         fontSize: 16,
         marginLeft: 8,
         fontFamily: 'Inter',
-      },
-      buttonIcon: {
+    },
+    buttonIcon: {
         width: 16,
         height: 16,
-      },
+    },
 });
 
 export default ImageCard;

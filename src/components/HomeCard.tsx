@@ -7,7 +7,7 @@ import { RootStackParamList } from '../types';
 import { useNavigation } from '@react-navigation/native';
 
 type HomeCardNavigationProp = StackNavigationProp<RootStackParamList, 'Home'>;
-const HomeCard: React.FC<HomeCardProps> = ({userName, handleLogOut}) => {
+const HomeCard: React.FC<HomeCardProps> = ({ userName, handleLogOut }) => {
     const navigation = useNavigation<HomeCardNavigationProp>();
     return (
         <View style={styles.card}>
@@ -19,7 +19,7 @@ const HomeCard: React.FC<HomeCardProps> = ({userName, handleLogOut}) => {
                     <Image source={require('../../assets/icons/alert_icon.png')} style={styles.butonIcon} />
                     <Text style={styles.buttonText}>{strings.homeScreen.alerts}</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={[styles.button, styles.productButton]}>
+                <TouchableOpacity style={[styles.button, styles.productButton]} onPress={() => navigation.navigate('ProductsList')}>
                     <Image source={require('../../assets/icons/product_icon.png')} style={styles.butonIcon} />
                     <Text style={styles.buttonText}>{strings.homeScreen.products}</Text>
                 </TouchableOpacity>
@@ -103,7 +103,7 @@ const styles = StyleSheet.create({
         fontSize: 14,
         color: '#FFFFFF',
         fontFamily: 'Inter',
-        fontWeight: 'bold' 
+        fontWeight: 'bold'
     },
     largeButton: {
         width: '100%',

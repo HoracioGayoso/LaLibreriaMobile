@@ -37,13 +37,13 @@ const BarcodeScannerScreen: React.FC = () => {
         );
       }
     };
-    console.log(scannedCode)
     getPermissions();
+
   }, [navigation]);
 
   const handleBarcodeScanned = (barcode: string) => {
     setScannedCode(barcode);
-    navigation.navigate('Producto', { barcode });
+    navigation.navigate('Product', { barcode });
   };
 
   if (!hasPermission) {
@@ -52,16 +52,16 @@ const BarcodeScannerScreen: React.FC = () => {
 
   return (
     <View style={styles.container}>
-        <Background>
+      <Background>
         <View style={styles.cardContainer}>
-            <BarcodeScannerCard onBarcodeScanned={handleBarcodeScanned} isScanning={isScanning}/>
+          <BarcodeScannerCard onBarcodeScanned={handleBarcodeScanned} isScanning={isScanning} />
         </View>
         {scannedCode && (
-            <View style={styles.infoContainer}>
+          <View style={styles.infoContainer}>
             <Text style={styles.infoText}>Último código: {scannedCode}</Text>
-            </View>
+          </View>
         )}
-        </Background>
+      </Background>
     </View>
   );
 };

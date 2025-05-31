@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Image } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../types';
 import Background from '../components/Background';
 import { RouteProp } from '@react-navigation/native';
 import ProductCard from '../components/ProductCard';
-import EditProductCard from '../components/EditProductCard';
-
-type ProductoScreenRouteProp = RouteProp<RootStackParamList, 'Producto'>;
-type ProductoScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Producto'>;
+import ProductNotFoundCard from '../components/ProductNotFoundCard';
+import { Mode } from '../types';
+type ProductoScreenRouteProp = RouteProp<RootStackParamList, 'Product'>;
+type ProductoScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Product'>;
 
 type Props = {
   route: ProductoScreenRouteProp;
@@ -18,53 +18,68 @@ type Props = {
 const ProductoScreen: React.FC<Props> = ({ route }) => {
   const { barcode } = route.params;
   const [product, setProduct] = useState<any>(null);
-  const [isEditing, setIsEditing] = useState(false);
+  const [mode, setMode] = useState<Mode>('none');
 
   useEffect(() => {
     const fetchProduct = async () => {
+      const localImage = require('../../assets/icons/product-placeholder.png');
+      const resolved = Image.resolveAssetSource(localImage);
       const fakeDatabase = [
         {
-          barcode: barcode,
+          barcode: 'barcode',
           name: 'Caja BIC Azul x50u',
           provider_name: 'El Once',
           price: 1000.0,
           profitMargin: 70,
           current_stock: 12,
-          image: null,
+          image: resolved.uri,
           unit: 'Cajas',
           //category_name: 'Categoria 2'
         },
       ];
-  
+
       const foundProduct = fakeDatabase.find((item) => item.barcode === barcode);
-      setProduct(foundProduct || null);
+      console.log(foundProduct);
+      if (foundProduct) {
+        setProduct(foundProduct);
+        setMode('edit');
+      } else {
+        setProduct(undefined);
+        setMode('none')
+      }
+
     };
-  
+
     fetchProduct();
   }, [barcode]);
 
-  const handleEditProduct = () => {
-    setIsEditing(true);
-  };
+  const handleCreateProduct = (newProduct: any) => {
+    console.log(newProduct, "aca pa");
+    if (newProduct) {
+      setMode('create');
+    }
+  }
 
   const handleSaveProduct = (updatedProduct: any) => {
     setProduct(updatedProduct);
-    setIsEditing(false);
-    console.log("product", product)
+    setMode('none');
   };
 
   return (
     <Background>
-      {product ? (
-        isEditing ? (
-          <EditProductCard product={product} saveProduct={handleSaveProduct} />
-        ) : (
-          <ProductCard product={product} editProduct={handleEditProduct} />
-        )
+      {mode === 'edit' ? (
+        <ProductCard
+          product={product}
+          saveProduct={handleSaveProduct}
+          barcode={barcode}
+        />
+      ) : mode === 'create' ? (
+        <ProductCard
+          saveProduct={handleSaveProduct}
+          barcode={barcode}
+        />
       ) : (
-        <View style={styles.notFoundContainer}>
-          <Text style={styles.notFoundText}>Producto no encontrado para el código: {barcode}</Text>
-        </View>
+        <ProductNotFoundCard onCreate={handleCreateProduct} />
       )}
     </Background>
   );

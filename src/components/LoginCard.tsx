@@ -34,7 +34,6 @@ const LoginCard: React.FC = () => {
         try {
             const user = await Auth.signInWithGoogle(); // Obtén el usuario de Google
             if (user) {
-                console.log(user)
                 navigation.navigate('Home'); // Navega a Home si el usuario existe
             }
         } catch (error) {
