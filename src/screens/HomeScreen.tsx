@@ -54,10 +54,10 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
     });
     return subscriber;
   }, [dispatch]);
-  
+
   return (
     <Background>
-      <HomeCard userName={user?.displayName || 'Usuario'} handleLogOut={handleLogOut}/>
+      <HomeCard userName={user?.displayName || 'Usuario'} handleLogOut={handleLogOut} />
     </Background>
   );
 };

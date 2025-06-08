@@ -15,7 +15,7 @@ const HomeCard: React.FC<HomeCardProps> = ({ userName, handleLogOut }) => {
                 {strings.homeScreen.welcome} <Text style={styles.boldText}>{userName}</Text>
             </Text>
             <View style={styles.buttonsContainer}>
-                <TouchableOpacity style={[styles.button, styles.alertButton]}>
+                <TouchableOpacity style={[styles.button, styles.alertButton]} onPress={() => navigation.navigate('Alerts')}>
                     <Image source={require('../../assets/icons/alert_icon.png')} style={styles.butonIcon} />
                     <Text style={styles.buttonText}>{strings.homeScreen.alerts}</Text>
                 </TouchableOpacity>
@@ -23,7 +23,7 @@ const HomeCard: React.FC<HomeCardProps> = ({ userName, handleLogOut }) => {
                     <Image source={require('../../assets/icons/product_icon.png')} style={styles.butonIcon} />
                     <Text style={styles.buttonText}>{strings.homeScreen.products}</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={[styles.button, styles.pricesButton]}>
+                <TouchableOpacity style={[styles.button, styles.pricesButton]} onPress={() => navigation.navigate('UpdatePrices')}>
                     <Image source={require('../../assets/icons/prices_icon.png')} style={styles.butonIcon} />
                     <Text style={styles.buttonText}>{strings.homeScreen.loadPrices}</Text>
                 </TouchableOpacity>
@@ -107,7 +107,7 @@ const styles = StyleSheet.create({
     },
     largeButton: {
         width: '100%',
-        borderRadius: 15,
+        borderRadius: 20,
         borderWidth: 2,
         borderColor: '#000',
         alignItems: 'center',

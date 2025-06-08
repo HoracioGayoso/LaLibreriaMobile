@@ -1,6 +1,5 @@
 export function formatPrice(value) {
     return value
-      .toFixed(2) // Aseguramos dos decimales
       .replace('.', ',') // Reemplazamos el punto decimal por coma
       .replace(/\B(?=(\d{3})+(?!\d))/g, '.') // Añadimos puntos como separadores de miles
       .replace(/^/, '$'); // Añadimos el símbolo de moneda al inicio

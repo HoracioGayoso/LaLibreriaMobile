@@ -7,6 +7,7 @@ import { RouteProp } from '@react-navigation/native';
 import ProductCard from '../components/ProductCard';
 import ProductNotFoundCard from '../components/ProductNotFoundCard';
 import { Mode } from '../types';
+import ViewProductCard from '../components/ViewProductCard';
 type ProductoScreenRouteProp = RouteProp<RootStackParamList, 'Product'>;
 type ProductoScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Product'>;
 
@@ -15,7 +16,7 @@ type Props = {
   navigation: ProductoScreenNavigationProp;
 };
 
-const ProductoScreen: React.FC<Props> = ({ route }) => {
+const ProductoScreen: React.FC<Props> = ({ route, navigation }) => {
   const { barcode } = route.params;
   const [product, setProduct] = useState<any>(null);
   const [mode, setMode] = useState<Mode>('none');
@@ -34,15 +35,14 @@ const ProductoScreen: React.FC<Props> = ({ route }) => {
           current_stock: 12,
           image: resolved.uri,
           unit: 'Cajas',
-          //category_name: 'Categoria 2'
+          category: 'Escritura'
         },
       ];
 
       const foundProduct = fakeDatabase.find((item) => item.barcode === barcode);
-      console.log(foundProduct);
       if (foundProduct) {
         setProduct(foundProduct);
-        setMode('edit');
+        setMode('view');
       } else {
         setProduct(undefined);
         setMode('none')
@@ -54,7 +54,6 @@ const ProductoScreen: React.FC<Props> = ({ route }) => {
   }, [barcode]);
 
   const handleCreateProduct = (newProduct: any) => {
-    console.log(newProduct, "aca pa");
     if (newProduct) {
       setMode('create');
     }
@@ -62,7 +61,7 @@ const ProductoScreen: React.FC<Props> = ({ route }) => {
 
   const handleSaveProduct = (updatedProduct: any) => {
     setProduct(updatedProduct);
-    setMode('none');
+    setMode('view');
   };
 
   return (
@@ -72,15 +71,21 @@ const ProductoScreen: React.FC<Props> = ({ route }) => {
           product={product}
           saveProduct={handleSaveProduct}
           barcode={barcode}
+          onBack={() => setMode('view')}
         />
       ) : mode === 'create' ? (
         <ProductCard
           saveProduct={handleSaveProduct}
           barcode={barcode}
+          onBack={() => setMode('none')}
         />
-      ) : (
-        <ProductNotFoundCard onCreate={handleCreateProduct} />
-      )}
+      ) : mode === 'view' ? (
+        <ViewProductCard product={product} onBack={() => navigation.navigate('Home')} onEdit={() => setMode('edit')} />
+      )
+        : (
+          <ProductNotFoundCard onCreate={handleCreateProduct} />
+        )
+      }
     </Background>
   );
 };

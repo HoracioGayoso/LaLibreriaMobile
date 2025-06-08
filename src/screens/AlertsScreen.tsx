@@ -1,89 +1,147 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     StyleSheet,
     FlatList,
     View,
-    SafeAreaView,
     ListRenderItem,
     Text,
     TouchableOpacity,
     Image,
-    TextInput
 } from 'react-native';
-import ProductListItem from '../components/ProductListItem';
 import Background from '../components/Background';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList, Filter } from 'types';
-import SearchBar from '../components/basic-components/SearchBar';
-import ProductListFilter from '../components/ProductListFilter';
 import FilterTag from '../components/basic-components/filterTag';
-import { getAllProducts } from '../services/server/productService';
-import { getAllCategories } from '../services/server/categoryService';
-import { getAllProveedores } from '../services/server/proveedorService';
+import AlertsFilter from '../components/AlertsFilter';
+import AlertItem from '../components/AlertItem';
+
+// Datos de ejemplo
+const ALERTS: any[] = [
+    {
+        id: '1',
+        name: 'Caja BIC Azul x50u 1',
+        provider_name: 'El Once',
+        price: 1000,
+        profitMargin: 70,
+        current_stock: 12,
+        min_stock: 15,
+        image: null,
+        unit: 'cajas',
+        category: 'Papelería',
+        barcode: 'barcode1'
+    },
+    {
+        id: '2',
+        name: 'Sacapunta Pizarro x100u 2',
+        provider_name: 'El Once',
+        price: 500,
+        profitMargin: 100,
+        current_stock: 0,
+        min_stock: 15,
+        image: null,
+        unit: 'cajas',
+        category: 'Escritura',
+        barcode: 'barcode2'
+    },
+    {
+        id: '3',
+        name: 'Caja BIC Azul x50u 3',
+        provider_name: 'El Once',
+        price: 1000,
+        profitMargin: 70,
+        current_stock: 12,
+        min_stock: 10,
+        image: null,
+        unit: 'cajas',
+        category: 'Papelería',
+        barcode: 'barcode3'
+    },
+    {
+        id: '4',
+        name: 'Sacapunta Pizarro x100u 4',
+        provider_name: 'El Once',
+        price: 500,
+        profitMargin: 100,
+        current_stock: 3,
+        min_stock: 15,
+        image: null,
+        unit: 'cajas',
+        category: 'Escritura',
+        barcode: 'barcode4'
+    },
+    {
+        id: '5',
+        name: 'Caja BIC Azul x50u 5',
+        provider_name: 'El Once',
+        price: 1000,
+        profitMargin: 70,
+        current_stock: 0,
+        min_stock: 15,
+        image: null,
+        unit: 'cajas',
+        category: 'Papelería',
+        barcode: 'barcode5'
+    },
+    {
+        id: '6',
+        name: 'Sacapunta Pizarro x100u 6',
+        provider_name: 'El Once',
+        price: 500,
+        profitMargin: 100,
+        current_stock: 1,
+        min_stock: 1,
+        image: null,
+        unit: 'cajas',
+        category: 'Escritura',
+        barcode: 'barcode6'
+    },
+    {
+        id: '7',
+        name: 'Sacapunta Pizarro x100u 7',
+        provider_name: 'El Doce',
+        price: 500,
+        profitMargin: 100,
+        current_stock: 15,
+        min_stock: 15,
+        image: null,
+        unit: 'cajas',
+        category: 'Escritura',
+        barcode: 'barcode7'
+    },
+];
+
 
 type ProductListNavigationProp = StackNavigationProp<RootStackParamList, 'ProductsList'>;
 
-const ProductsListScreen: React.FC = () => {
+const AlertsScreen: React.FC = () => {
 
     const navigation = useNavigation<ProductListNavigationProp>();
-    const [searchText, setSearchText] = useState('');
     const [filter, setFilter] = useState(false);
     const [filters, setFilters] = useState<Filter>({});
-    const [products, setProducts] = useState<any[]>([]);
-    const [providers, setProviders] = useState<any[]>([]);
-    const [categories, setCategories] = useState<any[]>([]);
-    const [filteredProducts, setFilteredProducts] = useState<any[]>([]);
-
+    const [filteredAlerts, setFilteredAlerts] = useState(ALERTS);
 
 
     const renderItem: ListRenderItem<any> = ({ item }) => (
         <View style={styles.itemContainer}>
-            <ProductListItem product={item} />
+            <AlertItem product={item} />
         </View>
     );
 
-
     useEffect(() => {
-        const fetchProducts = async () => {
-            try {
-                const [productsData, providersData, categoriesData] = await Promise.all([
-                    getAllProducts(),
-                    getAllProveedores(),
-                    getAllCategories()
-                ]);
-                setProducts(productsData);
-                setProviders(providersData);
-                setCategories(categoriesData);
-            } catch (error) {
-                console.error('Error al obtener productos:', error);
-            }
-        };
+        const result = ALERTS
+            .filter((alert) => alert.current_stock <= alert.min_stock)
+            .filter((alert) => {
+                if (!filters.alertType) return true;
 
-        fetchProducts();
-    }, []);
-    useEffect(() => {
-        const result = products.filter((product) => {
-            const filterMatch = Object.entries(filters).every(([key, value]) =>
-                product[key]?.toLowerCase().includes(value.toLowerCase())
-            );
-            const searchMatch =
-                product.nombre.toLowerCase().includes(searchText.toLowerCase()) ||
-                product.codigo_barra.toLowerCase().includes(searchText.toLowerCase());
-            return filterMatch && searchMatch;
-        });
-        setFilteredProducts(result);
-    }, [filters, searchText, products]);
+                const isAmarilla = filters.alertType === 'Amarilla' && alert.current_stock > 0;
+                const isRoja = filters.alertType === 'Roja' && alert.current_stock === 0;
 
-    const productsWithProviders = useMemo(() => {
-        return filteredProducts.map(product => {
-            const proveedor = providers.find(p => p.id === product.proveedor_id);
-            return {
-                ...product,
-                proveedor_name: proveedor.nombre || null,
-            };
-        });
-    }, [filteredProducts, providers]);
+                return isAmarilla || isRoja;
+            });
+
+        setFilteredAlerts(result);
+    }, [filters]);
 
     const removeFilter = (keyToRemove: string) => {
         const newFilters = { ...filters };
@@ -97,12 +155,7 @@ const ProductsListScreen: React.FC = () => {
             {!filter ?
                 <>
                     <View style={styles.card}>
-                        <Text style={styles.listTitle}>Listado de Productos</Text>
-
-                        <SearchBar
-                            value={searchText}
-                            onChangeText={setSearchText}
-                        />
+                        <Text style={styles.listTitle}>Alertas</Text>
 
                         <TouchableOpacity
                             style={[styles.button, styles.filterButton]}
@@ -115,27 +168,17 @@ const ProductsListScreen: React.FC = () => {
                             <Text style={styles.buttonText}>Filtros</Text>
                         </TouchableOpacity>
                         <View style={styles.filterTagsContainer}>
-                            {Object.entries(filters).map(([key, value]) => {
-                                let displayValue = value;
-                                if (key === 'proveedor_id') {
-                                    const provider = providers.find(p => p.id === value);
-                                    if (provider) displayValue = provider.nombre;
-                                } else if (key === 'categoria_id') {
-                                    const category = categories.find(c => c.id === value);
-                                    if (category) displayValue = category.nombre;
-                                }
-                                return (
-                                    <FilterTag
-                                        key={key}
-                                        value={displayValue}
-                                        onDelete={() => removeFilter(key)}
-                                    />
-                                );
-                            })}
+                            {Object.entries(filters).map(([key, value]) => (
+                                <FilterTag
+                                    key={key}
+                                    value={`${value}`}
+                                    onDelete={() => removeFilter(key)}
+                                />
+                            ))}
                         </View>
                         <View style={styles.scrollContainer}>
                             <FlatList
-                                data={productsWithProviders}
+                                data={filteredAlerts}
                                 renderItem={renderItem}
                                 keyExtractor={(item) => item.id}
                                 contentContainerStyle={styles.listContainer}
@@ -151,13 +194,13 @@ const ProductsListScreen: React.FC = () => {
                                 source={require('../../assets/icons/chevron-left.png')}
                                 style={styles.buttonIcon}
                             />
-                            <Text style={styles.buttonText}>Volver</Text>
+                            <Text style={styles.buttonText}>Volver al inicio</Text>
                         </TouchableOpacity>
 
                     </View>
                 </>
                 :
-                <ProductListFilter onApply={(newFilters) => {
+                <AlertsFilter onApply={(newFilters) => {
                     setFilters(newFilters);
                     setFilter(!filter);
                 }} onClose={() => setFilter(false)} />
@@ -245,4 +288,4 @@ const styles = StyleSheet.create({
 
 });
 
-export default ProductsListScreen;
+export default AlertsScreen;

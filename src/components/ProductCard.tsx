@@ -18,7 +18,7 @@ import { formatPrice, unformatPrice, formatMargin, unformatMargin } from '../uti
 import ImageCard from './ImageCard';
 type ProductCardNavigationProp = StackNavigationProp<RootStackParamList, 'Product'>;
 
-const ProductCard: React.FC<ProductCardProps> = ({ saveProduct, barcode, product }) => {
+const ProductCard: React.FC<ProductCardProps> = ({ saveProduct, barcode, product, onBack }) => {
   const navigation = useNavigation<ProductCardNavigationProp>();
   const [name, setName] = useState(product?.name || '');
   const [provider, setProvider] = useState(product?.provider_name || '');
@@ -26,14 +26,9 @@ const ProductCard: React.FC<ProductCardProps> = ({ saveProduct, barcode, product
   const [margin, setMargin] = useState(product?.profitMargin && !isNaN(product.profitMargin) ? formatMargin(product.profitMargin.toString()) : '');
   const [stock, setStock] = useState(product?.current_stock || '');
   const [unit, setUnit] = useState(product?.unit || '');
-  const [category, setCategory] = useState(product?.category_name || '');
+  const [category, setCategory] = useState(product?.category || '');
   const [image, setImage] = useState(product?.image || null);
   const [showImageModal, setShowImageModal] = useState(false);
-
-  useEffect(() => {
-    console.log(product)
-
-  }, [product]);
   const saveChanges = () => {
     const updatedProduct = {
       ...product,
@@ -45,7 +40,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ saveProduct, barcode, product
       current_stock: stock,
       unit,
       image,
-      category_name: category
+      category: category
     };
     saveProduct(updatedProduct);
   };
@@ -91,9 +86,9 @@ const ProductCard: React.FC<ProductCardProps> = ({ saveProduct, barcode, product
     { label: 'Resmas', value: 'Resmas' }
   ];
   const categoryData = [
-    { label: 'Categoria 1', value: 'Categoria 1' },
-    { label: 'Categoria 2', value: 'Categoria 2' },
-    { label: 'Categoria 3', value: 'Categoria 3' }
+    { label: 'Escritura', value: 'Escritura' },
+    { label: 'Papeleria', value: 'Papeleria' },
+    { label: 'Fotocopias', value: 'Fotocopias' }
   ];
 
   return (
@@ -246,7 +241,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ saveProduct, barcode, product
 
       <TouchableOpacity
         style={[styles.button, styles.backButton]}
-        onPress={() => navigation.goBack()}
+        onPress={() => onBack()}
       >
         <Image source={require('../../assets/icons/chevron-left.png')} style={styles.buttonIcon} />
         <Text style={styles.buttonText}>Volver</Text>

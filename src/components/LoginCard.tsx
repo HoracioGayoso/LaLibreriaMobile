@@ -14,7 +14,7 @@ type LoginScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Login'
 
 //importar auth aca
 const LoginCard: React.FC = () => {
-    
+
     const theme = useTheme();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -40,7 +40,7 @@ const LoginCard: React.FC = () => {
             console.error("Error during Google sign in:", error);
         }
     };
-    
+
 
     const customTheme = {
         ...theme,
@@ -73,7 +73,7 @@ const LoginCard: React.FC = () => {
                     ...customTheme,
                     colors: { primary: '#9C9C9C' },
                 }}
-                contentStyle={{ fontFamily: 'FuzzyBubblesRegular', color: 'black'}}
+                contentStyle={{ fontFamily: 'FuzzyBubblesRegular', color: 'black' }}
                 value={email}
                 onChangeText={setEmail}
             />
@@ -92,8 +92,8 @@ const LoginCard: React.FC = () => {
                 value={password}
                 onChangeText={setPassword}
             />
-            <TouchableOpacity style={styles.googleButton} onPress={handleSignIn}>
-                <Text style={styles.googleButtonText}>{strings.loginScreen.loginButton}</Text>
+            <TouchableOpacity style={styles.loginButton} onPress={handleSignIn}>
+                <Text style={styles.loginButtonText}>{strings.loginScreen.loginButton}</Text>
             </TouchableOpacity>
         </View>
     );
@@ -149,6 +149,18 @@ const styles = StyleSheet.create({
         borderColor: "#9C9C9C",
         borderWidth: 2,
     },
+    loginButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: '#6371B2',
+        paddingVertical: 10,
+        borderRadius: 12,
+        marginBottom: 20,
+        width: '100%',
+        justifyContent: 'center',
+        borderColor: "#FFFFFF",
+        borderWidth: 2,
+    },
     googleIcon: {
         width: 20,
         height: 20,
@@ -156,6 +168,14 @@ const styles = StyleSheet.create({
     },
     googleButtonText: {
         color: 'black',
+        fontFamily: 'FuzzyBubblesBold',
+        fontWeight: '400',
+        fontSize: 12,
+        lineHeight: 15.6,
+        textAlign: 'center',
+    },
+    loginButtonText: {
+        color: 'white',
         fontFamily: 'FuzzyBubblesBold',
         fontWeight: '400',
         fontSize: 12,

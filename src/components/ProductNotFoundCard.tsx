@@ -52,7 +52,7 @@ const ProductNotFoundCard: React.FC<ProductNotFoundCardProps> = ({
 
       <TouchableOpacity
         style={[styles.button, styles.backButton]}
-        onPress={() => navigation.goBack()}>
+        onPress={() => navigation.navigate('Home')}>
         <Image
           source={require('../../assets/icons/chevron-left.png')}
           style={styles.buttonIcon}
