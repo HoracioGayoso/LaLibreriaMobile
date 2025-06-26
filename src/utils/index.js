@@ -1,28 +1,37 @@
+// Formatea un número como precio con separador de miles, coma decimal y símbolo '$'
+// Ej: 1234.56 → "$1.234,56"
 export function formatPrice(value) {
-    return value
-      .replace('.', ',') // Reemplazamos el punto decimal por coma
-      .replace(/\B(?=(\d{3})+(?!\d))/g, '.') // Añadimos puntos como separadores de miles
-      .replace(/^/, '$'); // Añadimos el símbolo de moneda al inicio
-  }
-export function unformatPrice(formattedValue) {
-    // Eliminar el símbolo de moneda y los puntos como separadores de miles
-    const numericValue = formattedValue
-      .replace(/[^0-9,.-]/g, '') 
-      .replace(/\./g, '')         // Elimina los puntos (separadores de miles)
-      .replace(',', '.');         // Reemplaza la coma decimal por punto
-  
-    // Convertir el string resultante en un número
-    return parseFloat(numericValue);
+  const num = typeof value === 'number' ? value : parseFloat(value.replace(',', '.'));
+  if (isNaN(num)) return '';
+  return (
+    '$' +
+    num
+      .toFixed(2) // dos decimales
+      .replace('.', ',') // coma como separador decimal
+      .replace(/\B(?=(\d{3})+(?!\d))/g, '.') // puntos como separadores de miles
+  );
 }
 
-// Función para formatear el margen agregando el símbolo '%'
-export const formatMargin = (value) => {
-    if (value === '') return '';
-    return `${value}%`;
-  };
-  
-  // Función para quitar el símbolo '%' del margen
-  export const unformatMargin = (value) => {
-    return value.replace('%', '').trim();
-  };
-  
+// Quita el formato del precio y lo convierte a número
+// Ej: "$1.234,56" → 1234.56
+export function unformatPrice(formattedValue) {
+  const numericValue = formattedValue
+    .replace(/[^0-9,,-]/g, '') // elimina todo excepto números, coma y guión
+    .replace(/\./g, '') // elimina puntos de miles
+    .replace(',', '.'); // cambia coma decimal a punto
+
+  return parseFloat(numericValue);
+}
+
+// Agrega '%' al final de un valor numérico
+// Ej: 25 → "25%"
+export function formatMargin(value) {
+  if (value === '' || value === null || value === undefined) return '';
+  return value + '%';
+}
+
+// Elimina el símbolo '%' del valor
+// Ej: "25%" → "25"
+export function unformatMargin(value) {
+  return value.replace('%', '').trim();
+}

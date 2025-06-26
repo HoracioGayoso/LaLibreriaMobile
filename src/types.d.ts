@@ -66,4 +66,5 @@ declare interface UpdatePricesListCardProps {
   document: any;
   onUpdate: (document: any) => void;
   onBack: () => void;
+  provider: any;
 }

@@ -4,8 +4,8 @@ import { formatPrice, formatMargin } from '../utils';
 
 const UpdatePriceProductItem: React.FC<{ product: any, newPrice: number, onDelete: () => void }> = ({ product, newPrice, onDelete }) => {
     const localImage = require('../../assets/icons/product-placeholder.png');
-    const imageSource = product.image
-        ? { uri: product.image }
+    const imageSource = product.imagen
+        ? { uri: product.imagen }
         : localImage;
 
     return (
@@ -18,11 +18,11 @@ const UpdatePriceProductItem: React.FC<{ product: any, newPrice: number, onDelet
                 />
             </View>
             <View style={styles.dataContainer}>
-                <Text style={styles.productName}>{product.name}</Text>
-                <Text style={styles.productData}>Margen de ganancia: {formatMargin(product.profitMargin.toString())}</Text>
+                <Text style={styles.productName}>{product.nombre}</Text>
+                <Text style={styles.productData}>Margen de ganancia: {formatMargin(product.porcentaje_ganancia.toString())}</Text>
             </View>
             <View style={styles.pricesContainer}>
-                <Text style={styles.oldPrice}>{formatPrice(product.price)}</Text>
+                <Text style={styles.oldPrice}>{formatPrice(product.precio_unidad)}</Text>
                 <Image
                     source={require('../../assets/icons/chevron-down-double.png')}
                     style={styles.newPriceIcon}

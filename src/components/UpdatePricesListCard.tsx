@@ -13,118 +13,67 @@ import Background from '../components/Background';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList, UpdatePricesListCardProps } from 'types';
+import { getAllProducts } from '../services/server/productService';
 
 type ProductListNavigationProp = StackNavigationProp<RootStackParamList, 'ProductsList'>;
 
-const UpdatePricesListCard: React.FC<UpdatePricesListCardProps> = ({ document, onBack, onUpdate }) => {
-    const PRODUCTS: any[] = [
-        {
-            id: '1',
-            name: 'Caja BIC Azul x50u 1',
-            provider_name: 'El Once',
-            price: 1000,
-            profitMargin: 70,
-            current_stock: 12,
-            image: null,
-            unit: 'cajas',
-            category: 'Papelería',
-            barcode: 'barcode1'
-        },
-        {
-            id: '2',
-            name: 'Sacapunta Pizarro x100u 2',
-            provider_name: 'El Once',
-            price: 500,
-            profitMargin: 100,
-            current_stock: 1,
-            image: null,
-            unit: 'cajas',
-            category: 'Escritura',
-            barcode: 'barcode2'
-        },
-        {
-            id: '3',
-            name: 'Caja BIC Azul x50u 3',
-            provider_name: 'El Once',
-            price: 1000,
-            profitMargin: 70,
-            current_stock: 12,
-            image: null,
-            unit: 'cajas',
-            category: 'Papelería',
-            barcode: 'barcode3'
-        },
-        {
-            id: '4',
-            name: 'Sacapunta Pizarro x100u 4',
-            provider_name: 'El Once',
-            price: 500,
-            profitMargin: 100,
-            current_stock: 1,
-            image: null,
-            unit: 'cajas',
-            category: 'Escritura',
-            barcode: 'barcode4'
-        },
-        {
-            id: '5',
-            name: 'Caja BIC Azul x50u 5',
-            provider_name: 'El Once',
-            price: 1000,
-            profitMargin: 70,
-            current_stock: 12,
-            image: null,
-            unit: 'cajas',
-            category: 'Papelería',
-            barcode: 'barcode5'
-        },
-        {
-            id: '6',
-            name: 'Sacapunta Pizarro x100u 6',
-            provider_name: 'El Once',
-            price: 500,
-            profitMargin: 100,
-            current_stock: 1,
-            image: null,
-            unit: 'cajas',
-            category: 'Escritura',
-            barcode: 'barcode6'
-        },
-        {
-            id: '7',
-            name: 'Sacapunta Pizarro x100u 7',
-            provider_name: 'El Doce',
-            price: 500,
-            profitMargin: 100,
-            current_stock: 1,
-            image: null,
-            unit: 'cajas',
-            category: 'Escritura',
-            barcode: 'barcode7'
-        },
-    ];
+const UpdatePricesListCard: React.FC<UpdatePricesListCardProps> = ({ document, onBack, onUpdate, provider }) => {
+    const [products, setProducts] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
 
+    useEffect(() => {
+        const fetchProducts = async () => {
+            try {
+                const [productsData] = await Promise.all([getAllProducts()]);
+                setProducts(productsData);
+            } catch (error) {
+                console.error('Error al obtener productos:', error);
+            } finally {
+                setLoading(false); // Marca como terminado
+            }
+        };
+
+        fetchProducts();
+    }, []);
     // Crear un mapa de productos existentes por barcode
-    const productsMap = new Map(PRODUCTS.map(product => [product.barcode, product]));
+    const productsMap = new Map(products.map(product => [product.codigo_barra, product]));
 
     // Filtrar documentos válidos con precio y barcode existente
-    const initialFilteredProducts: (any & { newPrice: number })[] =
-        Array.isArray(document)
-            ? document
-                .filter((doc: any) => typeof doc.newPrice === 'number' && productsMap.has(doc.barcode))
-                .map((doc: any) => {
-                    const originalProduct = productsMap.get(doc.barcode)!;
-                    return {
-                        ...originalProduct,
-                        newPrice: doc.newPrice,
-                    };
-                })
-            : [];
-    const [filteredProducts, setFilteredProducts] = useState(initialFilteredProducts);
+    // const initialFilteredProducts: (any & { newPrice: number })[] =
+    //     Array.isArray(document)
+    //         ? document
+    //             .filter((doc: any) => typeof doc.precio === 'number' && productsMap.has(doc.codigo_barra))
+    //             .map((doc: any) => {
+    //                 const originalProduct = productsMap.get(doc.codigo_barra)!;
+    //                 return {
+    //                     ...originalProduct,
+    //                     nuevoPrecio: doc.precio,
+    //                 };
+    //             })
+    //         : [];
+    const [filteredProducts, setFilteredProducts] = useState<any[]>([]);
     useEffect(() => {
-        // Si document cambia, actualizar la lista filtrada
-        setFilteredProducts(initialFilteredProducts);
-    }, [document]);
+        if (
+            loading ||                      // Esperar a que termine
+            !Array.isArray(document) ||
+            products.length === 0 ||
+            !provider?.id
+        ) return;
+        const documentMap = new Map(
+            document.map((item: any) => [item.codigo_barra, item.precio])
+        );
+        console.log(documentMap)
+        const filtered = products
+            .filter(product =>
+                product.proveedor_id === provider.id
+            )
+            .map(product => ({
+                ...product,
+                nuevoPrecio: documentMap.get(product.codigo_barra),
+            }));
+        console.log(filtered)
+        setFilteredProducts(filtered);
+    }, [document, products, provider?.id, loading]);
     const handleDelete = (productId: string) => {
         setFilteredProducts(current =>
             current.filter(product => product.id !== productId)
@@ -133,7 +82,7 @@ const UpdatePricesListCard: React.FC<UpdatePricesListCardProps> = ({ document, o
 
     const renderItem: ListRenderItem<any> = ({ item }) => (
         <View style={styles.itemContainer}>
-            <UpdatePriceProductItem product={item} newPrice={item.newPrice} onDelete={() => handleDelete(item.id)} />
+            <UpdatePriceProductItem product={item} newPrice={item.nuevoPrecio} onDelete={() => handleDelete(item.id)} />
         </View>
     );
 

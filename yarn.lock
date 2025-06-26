@@ -3935,6 +3935,7 @@ __metadata:
     react-native-dotenv: ^3.4.11
     react-native-element-dropdown: ^2.12.4
     react-native-image-picker: ^7.2.3
+    react-native-make: ^1.0.1
     react-native-paper: ^5.12.5
     react-native-safe-area-context: ^4.12.0
     react-native-screens: ^3.35.0
@@ -9581,6 +9582,13 @@ __metadata:
     react: "*"
     react-native: "*"
   checksum: 96d67516e8e1c1768c593ca1b0a507d5212d8ac5df2610ad9d6f38c188b8d0720966559867849f74b6c19d2500664ce17c907e5fa37ab72487abd363cf493e7d
+  languageName: node
+  linkType: hard
+
+"react-native-make@npm:^1.0.1":
+  version: 1.0.1
+  resolution: "react-native-make@npm:1.0.1"
+  checksum: 9e5ab8c89d5a2271bfd6dc38060a9463261a177b5a47c54f009367b79c3e727a8e3ba28ee560f4f401482879476297333e4d605d70605f2a59a25cc4f42c7bf7
   languageName: node
   linkType: hard
 

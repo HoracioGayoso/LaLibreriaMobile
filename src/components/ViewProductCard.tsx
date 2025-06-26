@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image, Alert, Modal, TextInput } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { ViewProductCardProps } from 'types';
@@ -8,9 +8,8 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import FullScreenImage from './FullScreenImage';
 
 const ViewProductCard: React.FC<ViewProductCardProps> = ({ product, onBack, onEdit }) => {
-    const [image, setImage] = useState(product?.image || null);
-    const [name, setName] = useState(product?.name || null);
-
+    const [image, setImage] = useState(product?.imagen || null);
+    const [name, setName] = useState(product?.nombre || null);
     return (
         <View style={styles.card}>
             <View style={styles.horizontalContainer}>
@@ -27,17 +26,17 @@ const ViewProductCard: React.FC<ViewProductCardProps> = ({ product, onBack, onEd
                 <View style={styles.titleContainer}>
                     <View style={styles.titleRow}>
                         <Text style={styles.title}>Producto </Text>
-                        <Text style={styles.titleText}>#{product.barcode}</Text>
+                        <Text style={styles.titleText}>#{product.codigo_barra}</Text>
                     </View>
                 </View>
             </View>
             <View style={styles.productDataContainer}>
-                <Text style={styles.label}>Nombre: <Text style={styles.text}>{product.name}</Text></Text>
-                <Text style={styles.label}>Proveedor: <Text style={styles.text}>{product.provider_name}</Text></Text>
-                <Text style={styles.label}>Categoria: <Text style={styles.text}>{product.category}</Text></Text>
-                <Text style={styles.label}>Precio Mayorista: <Text style={styles.text}>{product.price}</Text></Text>
-                <Text style={styles.label}>Margen de ganancia: <Text style={styles.text}>{product.profitMargin}</Text></Text>
-                <Text style={styles.label}>Stock actual: <Text style={styles.text}>{product.current_stock}</Text></Text>
+                <Text style={styles.label}>Nombre: <Text style={styles.text}>{product.nombre}</Text></Text>
+                <Text style={styles.label}>Proveedor: <Text style={styles.text}>{product.proveedor_name}</Text></Text>
+                <Text style={styles.label}>Categoria: <Text style={styles.text}>{product.categoria_name}</Text></Text>
+                <Text style={styles.label}>Precio Mayorista: <Text style={styles.text}>{product.precio_unidad}</Text></Text>
+                <Text style={styles.label}>Margen de ganancia: <Text style={styles.text}>{product.porcentaje_ganancia}</Text></Text>
+                <Text style={styles.label}>Stock actual: <Text style={styles.text}>{product.stock}</Text></Text>
             </View>
             <TouchableOpacity style={[
                 styles.button,
@@ -161,7 +160,8 @@ const styles = StyleSheet.create({
         fontSize: 14,
         color: '#FFFFFF',
         fontFamily: 'Inter',
-        fontWeight: 'bold'
+        fontWeight: 'bold',
+        marginLeft: 10,
     },
     buttonDisabled: {
         backgroundColor: '#999',

@@ -1,13 +1,11 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View, Text, StyleSheet, Image } from 'react-native';
-import { formatPrice, formatMargin } from '../utils';
 
 const AlertItem: React.FC<{ product: any }> = ({ product }) => {
     const localImage = require('../../assets/icons/product-placeholder.png');
-    const imageSource = product.image
-        ? { uri: product.image }
+    const imageSource = product.imagen
+        ? { uri: product.imagen }
         : localImage;
-
     return (
         <View style={styles.container}>
             <View style={styles.imageContainer}>
@@ -18,19 +16,19 @@ const AlertItem: React.FC<{ product: any }> = ({ product }) => {
                 />
             </View>
             <View style={styles.dataContainer}>
-                {product.current_stock === 0 && (
+                {product.stock === 0 && (
                     <View style={styles.stockContainer}>
-                        <Text style={styles.productName}>{product.name}</Text>
+                        <Text style={styles.productName}>{product.nombre}</Text>
                         <Text style={styles.noStock}>Sin stock</Text>
                     </View>
                 )
                 }
-                {product.current_stock > 0 && (
+                {product.stock > 0 && (
                     <View style={styles.stockContainer}>
-                        <Text style={styles.productName}>{product.name}</Text>
-                        <Text style={styles.productData}>Stock actual: {product.current_stock} ({product.unit})</Text>
+                        <Text style={styles.productName}>{product.nombre}</Text>
+                        <Text style={styles.productData}>Stock actual: {product.tock} unidades</Text>
                         <Text style={styles.productData}>
-                            Stock limite: {product.min_stock} ({product.unit})
+                            Stock limite: {product.min_stock} unidades
                         </Text>
                     </View>
                 )
@@ -38,7 +36,7 @@ const AlertItem: React.FC<{ product: any }> = ({ product }) => {
             </View>
             <View style={styles.alertContainer}>
                 <Image
-                    source={product.current_stock === 0 ? require('../../assets/icons/red-alert.png') : require('../../assets/icons/yellow-alert.png')}
+                    source={product.stock === 0 ? require('../../assets/icons/red-alert.png') : require('../../assets/icons/yellow-alert.png')}
                     style={styles.alertIcon}
                 />
             </View>

@@ -14,13 +14,15 @@ import ProductListItem from '../components/ProductListItem';
 import Background from '../components/Background';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { RootStackParamList, Filter } from 'types';
+import { RootStackParamList, Filter, Mode } from 'types';
 import SearchBar from '../components/basic-components/SearchBar';
 import ProductListFilter from '../components/ProductListFilter';
 import FilterTag from '../components/basic-components/filterTag';
-import { getAllProducts } from '../services/server/productService';
+import { getAllProducts, updateProduct } from '../services/server/productService';
 import { getAllCategories } from '../services/server/categoryService';
 import { getAllProveedores } from '../services/server/proveedorService';
+import ProductCard from '../components/ProductCard';
+import ViewProductCard from '../components/ViewProductCard';
 
 type ProductListNavigationProp = StackNavigationProp<RootStackParamList, 'ProductsList'>;
 
@@ -34,15 +36,21 @@ const ProductsListScreen: React.FC = () => {
     const [providers, setProviders] = useState<any[]>([]);
     const [categories, setCategories] = useState<any[]>([]);
     const [filteredProducts, setFilteredProducts] = useState<any[]>([]);
-
-
-
+    const [mode, setMode] = useState<Mode>('none');
+    const [viewProduct, setViewProduct] = useState<any>(null);
     const renderItem: ListRenderItem<any> = ({ item }) => (
         <View style={styles.itemContainer}>
-            <ProductListItem product={item} />
+            <TouchableOpacity onPress={() => { setViewProduct(item) }}>
+                <ProductListItem product={item} />
+            </TouchableOpacity>
         </View>
     );
+    useEffect(() => {
+        if (viewProduct) {
+            setMode('view');
+        }
 
+    }, [viewProduct]);
 
     useEffect(() => {
         const fetchProducts = async () => {
@@ -55,6 +63,7 @@ const ProductsListScreen: React.FC = () => {
                 setProducts(productsData);
                 setProviders(providersData);
                 setCategories(categoriesData);
+                console.log(productsData[0]);
             } catch (error) {
                 console.error('Error al obtener productos:', error);
             }
@@ -75,26 +84,58 @@ const ProductsListScreen: React.FC = () => {
         setFilteredProducts(result);
     }, [filters, searchText, products]);
 
-    const productsWithProviders = useMemo(() => {
+    const productsWithProvidersAndCategories = useMemo(() => {
+        if (!categories.length || !providers.length) return [];
+
         return filteredProducts.map(product => {
             const proveedor = providers.find(p => p.id === product.proveedor_id);
+            const category = categories.find(c => c.id === product.categoria_id);
             return {
                 ...product,
-                proveedor_name: proveedor.nombre || null,
+                proveedor_name: proveedor?.nombre || null,
+                categoria_name: category?.nombre || null,
             };
         });
-    }, [filteredProducts, providers]);
+    }, [filteredProducts, providers, categories]);
 
     const removeFilter = (keyToRemove: string) => {
         const newFilters = { ...filters };
         delete newFilters[keyToRemove];
         setFilters(newFilters);
     };
+    const handleSaveProduct = async (updatedProduct: any) => {
+        try {
+            const result = await updateProduct(updatedProduct.codigo_barra, updatedProduct);
+
+            // Actualizar la lista de productos
+            const updatedProducts = products.map(p =>
+                p.codigo_barra === updatedProduct.codigo_barra ? updatedProduct : p
+            );
+            setProducts(updatedProducts);
+
+            // Obtener proveedor y categoría
+            const proveedor = providers.find(p => p.id === updatedProduct.proveedor_id);
+            const categoria = categories.find(c => c.id === updatedProduct.categoria_id);
+
+            // Enriquecer el producto actualizado
+            const enrichedProduct = {
+                ...updatedProduct,
+                proveedor_name: proveedor?.nombre || null,
+                categoria_name: categoria?.nombre || null,
+            };
+
+            // Setear como producto en vista
+            setViewProduct(enrichedProduct);
+            setMode('view');
+        } catch (error) {
+            console.error('Error al guardar el producto:', error);
+        }
+    };
 
 
     return (
         <Background>
-            {!filter ?
+            {!filter && mode === 'none' ?
                 <>
                     <View style={styles.card}>
                         <Text style={styles.listTitle}>Listado de Productos</Text>
@@ -135,7 +176,7 @@ const ProductsListScreen: React.FC = () => {
                         </View>
                         <View style={styles.scrollContainer}>
                             <FlatList
-                                data={productsWithProviders}
+                                data={productsWithProvidersAndCategories}
                                 renderItem={renderItem}
                                 keyExtractor={(item) => item.id}
                                 contentContainerStyle={styles.listContainer}
@@ -156,12 +197,22 @@ const ProductsListScreen: React.FC = () => {
 
                     </View>
                 </>
-                :
-                <ProductListFilter onApply={(newFilters) => {
-                    setFilters(newFilters);
-                    setFilter(!filter);
-                }} onClose={() => setFilter(false)} />
+                : mode === 'none' ?
+                    <ProductListFilter onApply={(newFilters) => {
+                        setFilters(newFilters);
+                        setFilter(!filter);
+                    }} onClose={() => setFilter(false)} /> : null
             }
+            {mode === 'view' && (
+                <ViewProductCard product={viewProduct} onBack={() => setMode('none')} onEdit={() => setMode('edit')}></ViewProductCard>
+            )}
+            {mode === 'edit' && (
+                <ProductCard barcode={viewProduct.codigo_barra}
+                    product={viewProduct}
+                    onBack={() => setMode('view')}
+                    saveProduct={handleSaveProduct}>
+                </ProductCard>
+            )}
         </Background>
     );
 

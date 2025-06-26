@@ -35,10 +35,10 @@ const NewProviderCard: React.FC<NewProviderProps> = ({ onCreate, onBack }) => {
         if (!isFormValid) return;
 
         const newProvider = {
-            name: name?.trim() || '',
+            nombre: name?.trim() || '',
             email: email?.trim() || '',
-            phone: phone?.trim() || '',
-            web: web?.trim() || '',
+            telefono: phone?.trim() || '',
+            sitio_web: web?.trim() || '',
         };
         onCreate(newProvider);
     };

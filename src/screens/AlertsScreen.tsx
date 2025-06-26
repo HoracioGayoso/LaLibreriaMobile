@@ -15,102 +15,7 @@ import { RootStackParamList, Filter } from 'types';
 import FilterTag from '../components/basic-components/filterTag';
 import AlertsFilter from '../components/AlertsFilter';
 import AlertItem from '../components/AlertItem';
-
-// Datos de ejemplo
-const ALERTS: any[] = [
-    {
-        id: '1',
-        name: 'Caja BIC Azul x50u 1',
-        provider_name: 'El Once',
-        price: 1000,
-        profitMargin: 70,
-        current_stock: 12,
-        min_stock: 15,
-        image: null,
-        unit: 'cajas',
-        category: 'Papelería',
-        barcode: 'barcode1'
-    },
-    {
-        id: '2',
-        name: 'Sacapunta Pizarro x100u 2',
-        provider_name: 'El Once',
-        price: 500,
-        profitMargin: 100,
-        current_stock: 0,
-        min_stock: 15,
-        image: null,
-        unit: 'cajas',
-        category: 'Escritura',
-        barcode: 'barcode2'
-    },
-    {
-        id: '3',
-        name: 'Caja BIC Azul x50u 3',
-        provider_name: 'El Once',
-        price: 1000,
-        profitMargin: 70,
-        current_stock: 12,
-        min_stock: 10,
-        image: null,
-        unit: 'cajas',
-        category: 'Papelería',
-        barcode: 'barcode3'
-    },
-    {
-        id: '4',
-        name: 'Sacapunta Pizarro x100u 4',
-        provider_name: 'El Once',
-        price: 500,
-        profitMargin: 100,
-        current_stock: 3,
-        min_stock: 15,
-        image: null,
-        unit: 'cajas',
-        category: 'Escritura',
-        barcode: 'barcode4'
-    },
-    {
-        id: '5',
-        name: 'Caja BIC Azul x50u 5',
-        provider_name: 'El Once',
-        price: 1000,
-        profitMargin: 70,
-        current_stock: 0,
-        min_stock: 15,
-        image: null,
-        unit: 'cajas',
-        category: 'Papelería',
-        barcode: 'barcode5'
-    },
-    {
-        id: '6',
-        name: 'Sacapunta Pizarro x100u 6',
-        provider_name: 'El Once',
-        price: 500,
-        profitMargin: 100,
-        current_stock: 1,
-        min_stock: 1,
-        image: null,
-        unit: 'cajas',
-        category: 'Escritura',
-        barcode: 'barcode6'
-    },
-    {
-        id: '7',
-        name: 'Sacapunta Pizarro x100u 7',
-        provider_name: 'El Doce',
-        price: 500,
-        profitMargin: 100,
-        current_stock: 15,
-        min_stock: 15,
-        image: null,
-        unit: 'cajas',
-        category: 'Escritura',
-        barcode: 'barcode7'
-    },
-];
-
+import { getAllProducts } from '../services/server/productService';
 
 type ProductListNavigationProp = StackNavigationProp<RootStackParamList, 'ProductsList'>;
 
@@ -119,29 +24,40 @@ const AlertsScreen: React.FC = () => {
     const navigation = useNavigation<ProductListNavigationProp>();
     const [filter, setFilter] = useState(false);
     const [filters, setFilters] = useState<Filter>({});
-    const [filteredAlerts, setFilteredAlerts] = useState(ALERTS);
-
+    const [filteredProducts, setFilteredProducts] = useState<any[]>([]);
+    const [products, setProducts] = useState<any[]>([]);
 
     const renderItem: ListRenderItem<any> = ({ item }) => (
         <View style={styles.itemContainer}>
             <AlertItem product={item} />
         </View>
     );
-
     useEffect(() => {
-        const result = ALERTS
-            .filter((alert) => alert.current_stock <= alert.min_stock)
-            .filter((alert) => {
+        const fetchProducts = async () => {
+            try {
+                const [productsData] = await Promise.all([
+                    getAllProducts(),
+                ]);
+                setProducts(productsData);
+            } catch (error) {
+                console.error('Error al obtener productos:', error);
+            }
+        };
+        fetchProducts();
+    }, []);
+    useEffect(() => {
+        const result = products
+            .filter((product) => product.stock <= product.min_stock)
+            .filter((product) => {
                 if (!filters.alertType) return true;
 
-                const isAmarilla = filters.alertType === 'Amarilla' && alert.current_stock > 0;
-                const isRoja = filters.alertType === 'Roja' && alert.current_stock === 0;
+                const isAmarilla = filters.alertType === 'Amarilla' && product.stock > 0;
+                const isRoja = filters.alertType === 'Roja' && product.stock === 0;
 
                 return isAmarilla || isRoja;
             });
-
-        setFilteredAlerts(result);
-    }, [filters]);
+        setFilteredProducts(result);
+    }, [filters, products]);
 
     const removeFilter = (keyToRemove: string) => {
         const newFilters = { ...filters };
@@ -178,7 +94,7 @@ const AlertsScreen: React.FC = () => {
                         </View>
                         <View style={styles.scrollContainer}>
                             <FlatList
-                                data={filteredAlerts}
+                                data={filteredProducts}
                                 renderItem={renderItem}
                                 keyExtractor={(item) => item.id}
                                 contentContainerStyle={styles.listContainer}

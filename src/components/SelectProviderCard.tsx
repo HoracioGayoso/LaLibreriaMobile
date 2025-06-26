@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     View,
     StyleSheet,
@@ -7,38 +7,52 @@ import {
     Image
 } from 'react-native';
 import { Dropdown } from 'react-native-element-dropdown';
+import { getAllProveedores } from '../services/server/proveedorService';
 import { SelectProviderProps } from 'types';
 
-const NewProviderCard: React.FC<SelectProviderProps> = ({ onSelect, onBack }) => {
+const SelectProviderCard: React.FC<SelectProviderProps> = ({ onSelect, onBack }) => {
     const [provider, setProvider] = useState<any>(undefined);
+    const [providers, setProviders] = useState<any>([]);
     const isFormValid = !!provider;
-    const providerData = [
-        { label: 'El Once', value: 'El Once' },
-        { label: 'El Doce', value: 'El Doce' },
-    ];
 
+
+    useEffect(() => {
+
+        const fetchProviders = async () => {
+            try {
+                const [providersData] = await Promise.all([
+                    getAllProveedores(),
+                ]);
+                setProviders(providersData);
+            } catch (error) {
+                console.error('Error al obtener proveedores:', error);
+            }
+        };
+
+        fetchProviders();
+    }, []);
     return (
         <View style={styles.card}>
             <Text style={styles.title}>Seleccionar proveedor</Text>
             <Text style={styles.label}>Proveedor</Text>
             <View style={styles.pickerContainer}>
                 <Dropdown
-                    data={providerData}
-                    labelField="label"
-                    valueField="value"
+                    data={providers}
+                    labelField="nombre"
+                    valueField="id"
                     value={provider}
                     placeholder="Selecciona un proveedor"
-                    onChange={item => setProvider(item.value)}
+                    onChange={item => setProvider(item)}
                     placeholderStyle={styles.placeholderStyle}
                     selectedTextStyle={styles.selectedTextStyle}
                     style={styles.dropdown}
-                    renderItem={(item: { label: string; value: string }, selected?: boolean) => {
-                        const index = providerData.findIndex(p => p.value === item.value);
-                        const isLast = index === providerData.length - 1;
+                    renderItem={(item, selected?: boolean) => {
+                        const index = providers.findIndex((p: { id: any; }) => p.id === item.id);
+                        const isLast = index === providers.length - 1;
 
                         return (
                             <View style={[styles.dropdownItem, isLast && styles.noBorder]}>
-                                <Text style={styles.itemTextStyle}>{item.label}</Text>
+                                <Text style={styles.itemTextStyle}>{item.nombre}</Text>
                             </View>
                         );
                     }}
@@ -173,4 +187,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default NewProviderCard;
+export default SelectProviderCard;

@@ -32,7 +32,7 @@ const ProductNotFoundCard: React.FC<ProductNotFoundCardProps> = ({
       current_stock: 0,
       image: null,
       unit: '',
-      category_name: undefined
+      categoria_name: undefined
     };
     onCreate(newProduct);
   };

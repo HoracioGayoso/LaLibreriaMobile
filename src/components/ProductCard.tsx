@@ -8,39 +8,93 @@ import {
   Image,
   Modal, // Importa Modal
 } from 'react-native';
-import { Picker } from '@react-native-picker/picker';
 import { Dropdown } from 'react-native-element-dropdown';
 import { ProductCardProps } from 'types';
-import { StackNavigationProp } from '@react-navigation/stack';
-import { RootStackParamList } from '../types';
-import { useNavigation } from '@react-navigation/native';
 import { formatPrice, unformatPrice, formatMargin, unformatMargin } from '../utils';
 import ImageCard from './ImageCard';
-type ProductCardNavigationProp = StackNavigationProp<RootStackParamList, 'Product'>;
+import { getAllProveedores } from '../services/server/proveedorService';
+import { getAllCategories } from '../services/server/categoryService';
 
 const ProductCard: React.FC<ProductCardProps> = ({ saveProduct, barcode, product, onBack }) => {
-  const navigation = useNavigation<ProductCardNavigationProp>();
-  const [name, setName] = useState(product?.name || '');
-  const [provider, setProvider] = useState(product?.provider_name || '');
-  const [price, setPrice] = useState(product?.price && !isNaN(product.price) ? formatPrice(product.price) : "");
-  const [margin, setMargin] = useState(product?.profitMargin && !isNaN(product.profitMargin) ? formatMargin(product.profitMargin.toString()) : '');
-  const [stock, setStock] = useState(product?.current_stock || '');
-  const [unit, setUnit] = useState(product?.unit || '');
-  const [category, setCategory] = useState(product?.category || '');
-  const [image, setImage] = useState(product?.image || null);
+  const [finalProduct, setFinalProduct] = useState(product ? product : {
+    nombre: '',
+    codigo_barra: barcode,
+    precio_unidad: '',
+    porcentaje_ganancia: '',
+    stock: '',
+    imagen: null,
+    proveedor_id: '',
+    categoria_id: '',
+  });
+  const [name, setName] = useState(finalProduct?.nombre || '');
+  const [provider, setProvider] = useState<any>(null);
+  const [category, setCategory] = useState<any>(null);
+  const [price, setPrice] = useState(finalProduct?.precio_unidad && !isNaN(finalProduct.precio_unidad) ? formatPrice(finalProduct.precio_unidad) : "");
+  const [margin, setMargin] = useState(finalProduct?.porcentaje_ganancia && !isNaN(finalProduct.porcentaje_ganancia) ? formatMargin(finalProduct.porcentaje_ganancia.toString()) : '');
+  const [stock, setStock] = useState(finalProduct?.stock || '');
+  const [image, setImage] = useState(finalProduct?.imagen || null);
   const [showImageModal, setShowImageModal] = useState(false);
+  const [providers, setProviders] = useState<any[]>([]);
+  const [categories, setCategories] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const [providersData, categoriesData] = await Promise.all([
+          getAllProveedores(),
+          getAllCategories()
+        ]);
+        setProviders(providersData);
+        setCategories(categoriesData);
+        if (finalProduct?.proveedor_id) {
+          const foundProvider = providersData.find((p: { id: any; }) => p.id === finalProduct.proveedor_id);
+          setProvider(foundProvider || '');
+        }
+
+        if (finalProduct?.categoria_id) {
+          const foundCategory = categoriesData.find((c: { id: any; }) => c.id === finalProduct.categoria_id);
+          setCategory(foundCategory || '');
+        }
+      } catch (error) {
+        console.error('Error al obtener productos:', error);
+      }
+    };
+
+    fetchProducts();
+  }, []);
+
+  useEffect(() => {
+    if (finalProduct) {
+      setName(finalProduct.nombre || '');
+      setPrice(finalProduct.precio_unidad && !isNaN(finalProduct.precio_unidad) ? formatPrice(finalProduct.precio_unidad) : '');
+      setMargin(finalProduct.porcentaje_ganancia && !isNaN(Number(finalProduct.porcentaje_ganancia)) ? formatMargin(finalProduct.porcentaje_ganancia.toString()) : '');
+      setStock(finalProduct.stock ?? '');
+      setImage(finalProduct.imagen || null);
+      if (finalProduct.proveedor_id && providers.length) {
+        const foundProvider = providers.find((p: { id: string }) => p.id === finalProduct.proveedor_id);
+        setProvider(foundProvider || '');
+      }
+
+      if (finalProduct.categoria_id && categories.length) {
+        const foundCategory = categories.find((c: { id: string }) => c.id === finalProduct.categoria_id);
+        setCategory(foundCategory || '');
+      }
+    }
+  }, [finalProduct, providers, categories]);
+
   const saveChanges = () => {
+    const { categoria_name = null, proveedor_name = null, ...rest } = finalProduct;
+
     const updatedProduct = {
-      ...product,
-      name,
-      barcode,
-      provider_name: provider,
-      price: unformatPrice(price),
-      profitMargin: unformatMargin(margin),
-      current_stock: stock,
-      unit,
-      image,
-      category: category
+      ...rest,
+      nombre: name,
+      codigo_barra: barcode,
+      precio_unidad: unformatPrice(price),
+      porcentaje_ganancia: unformatMargin(margin),
+      stock: Number(stock),
+      imagen: image,
+      categoria_id: category.id,
+      proveedor_id: provider.id
     };
     saveProduct(updatedProduct);
   };
@@ -75,21 +129,6 @@ const ProductCard: React.FC<ProductCardProps> = ({ saveProduct, barcode, product
   const handleCloseImageModal = () => {
     setShowImageModal(false);
   };
-  const providerData = [
-    { label: 'El Once', value: 'El Once' },
-    { label: 'Otro Proveedor', value: 'Otro Proveedor' },
-  ];
-
-  const unitData = [
-    { label: 'Cajas', value: 'Cajas' },
-    { label: 'Unidades', value: 'Unidades' },
-    { label: 'Resmas', value: 'Resmas' }
-  ];
-  const categoryData = [
-    { label: 'Escritura', value: 'Escritura' },
-    { label: 'Papeleria', value: 'Papeleria' },
-    { label: 'Fotocopias', value: 'Fotocopias' }
-  ];
 
   return (
     <View style={styles.card}>
@@ -122,22 +161,21 @@ const ProductCard: React.FC<ProductCardProps> = ({ saveProduct, barcode, product
       <Text style={styles.label}>Categoria</Text>
       <View style={styles.pickerContainer}>
         <Dropdown
-          data={categoryData}
-          labelField="label"
-          valueField="value"
-          value={category}
+          data={categories}
+          labelField="nombre"
+          valueField="id"
+          value={category?.id}
           placeholder="Selecciona una categoria"
-          onChange={item => setCategory(item.value)}
+          onChange={item => setCategory(item)}
           placeholderStyle={styles.placeholderStyle}
           selectedTextStyle={styles.selectedTextStyle}
           style={styles.dropdown}
-          renderItem={(item: { label: string; value: string }, selected?: boolean) => {
-            const index = categoryData.findIndex(p => p.value === item.value);
-            const isLast = index === categoryData.length - 1;
-
+          renderItem={(item, selected) => {
+            const index = categories.findIndex(c => c === item);
+            const isLast = index === categories.length - 1;
             return (
               <View style={[styles.dropdownItem, isLast && styles.noBorder]}>
-                <Text style={styles.itemTextStyle}>{item.label}</Text>
+                <Text style={styles.itemTextStyle}>{item.nombre}</Text>
               </View>
             );
           }}
@@ -147,22 +185,21 @@ const ProductCard: React.FC<ProductCardProps> = ({ saveProduct, barcode, product
       <Text style={styles.label}>Proveedor</Text>
       <View style={styles.pickerContainer}>
         <Dropdown
-          data={providerData}
-          labelField="label"
-          valueField="value"
-          value={provider}
+          data={providers}
+          labelField="nombre"
+          valueField="id"
+          value={provider?.id}
           placeholder="Selecciona un proveedor"
-          onChange={item => setProvider(item.value)}
+          onChange={item => setProvider(item)}
           placeholderStyle={styles.placeholderStyle}
           selectedTextStyle={styles.selectedTextStyle}
           style={styles.dropdown}
-          renderItem={(item: { label: string; value: string }, selected?: boolean) => {
-            const index = providerData.findIndex(p => p.value === item.value);
-            const isLast = index === providerData.length - 1;
-
+          renderItem={(item, selected) => {
+            const index = providers.findIndex(p => p === item);
+            const isLast = index === providers.length - 1;
             return (
               <View style={[styles.dropdownItem, isLast && styles.noBorder]}>
-                <Text style={styles.itemTextStyle}>{item.label}</Text>
+                <Text style={styles.itemTextStyle}>{item.nombre}</Text>
               </View>
             );
           }}
@@ -191,7 +228,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ saveProduct, barcode, product
         onBlur={handleBlurMargin}
       />
 
-      {/* Contenedor para Stock y Unidades */}
+      {/* Contenedor para Stock */}
       <View style={styles.rowContainer}>
         {/* Columna de Stock */}
         <View style={styles.stockContainer}>
@@ -203,34 +240,6 @@ const ProductCard: React.FC<ProductCardProps> = ({ saveProduct, barcode, product
             keyboardType="numeric"
             onChangeText={setStock}
           />
-        </View>
-
-        {/* Columna de Unidad */}
-        <View style={styles.unitContainer}>
-          <Text style={styles.label}>Unidad</Text>
-          <View style={styles.pickerContainer}>
-            <Dropdown
-              data={unitData}
-              labelField="label"
-              valueField="value"
-              value={unit}
-              placeholder="Selecciona una unidad"
-              onChange={item => setUnit(item.value)}
-              placeholderStyle={styles.placeholderStyle}
-              selectedTextStyle={styles.selectedTextStyle}
-              style={styles.dropdown}
-              renderItem={(item: { label: string; value: string }, selected?: boolean) => {
-                const index = unitData.findIndex(p => p.value === item.value);
-                const isLast = index === unitData.length - 1;
-
-                return (
-                  <View style={[styles.dropdownItem, isLast && styles.noBorder]}>
-                    <Text style={styles.itemTextStyle}>{item.label}</Text>
-                  </View>
-                );
-              }}
-            />
-          </View>
         </View>
       </View>
 

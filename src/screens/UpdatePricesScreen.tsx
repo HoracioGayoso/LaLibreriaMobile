@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import {
     StyleSheet,
     TouchableOpacity,
@@ -16,30 +16,88 @@ import NewProviderCard from '../components/NewProviderCard';
 import SelectProviderCard from '../components/SelectProviderCard';
 import UpdatePricesListCard from '../components/UpdatePricesListCard';
 import CustomModal from '../components/basic-components/modal';
+import { createProveedor } from '../services/server/proveedorService';
 type ProductCardNavigationProp = StackNavigationProp<RootStackParamList, 'Home'>;
 
 const UpdatePricesScreen: React.FC = () => {
 
     const navigation = useNavigation<ProductCardNavigationProp>();
-    const [provider, setProvider] = useState('El Once');
     const [newProvider, setNewProvider] = useState(false);
     const [selectProvider, setSelectProvider] = useState(false);
     const [updatePrices, setUpdatePrices] = useState(false);
     const [visible, setVisible] = useState(false);
+    const [provider, setProvider] = useState<any>(null);
+    const [showCreateSuccessModal, setShowCreateSuccessModal] = useState(false);
+
     const document = [
-        { barcode: "barcode1", newPrice: 12000.99 },
-        { barcode: "barcode2", newPrice: 8000.5 },
-        { barcode: "barcode3", newPrice: 1400.75 },
-        { barcode: "barcode4", newPrice: 9000.99 },
-        { barcode: "barcode5", newPrice: 6000.25 },
-        { barcode: "barcode6", newPrice: 10000.0 },
-        { barcode: "barcode7", newPrice: 700.45 }
+        { codigo_barra: "7790400018608", precio: 1273.45 },
+        { codigo_barra: "4026700408157", precio: 859.99 },
+        { codigo_barra: "6926341895409", precio: 3021.75 },
+        { codigo_barra: "7792560463432", precio: 475.30 },
+        { codigo_barra: "7796569233227", precio: 6200.00 },
+        { codigo_barra: "70330172975", precio: 799.90 },
+        { codigo_barra: "70330172982", precio: 1240.25 },
+        { codigo_barra: "70330200234", precio: 995.00 },
+        { codigo_barra: "70330200241", precio: 2134.67 },
+        { codigo_barra: "70330139503", precio: 390.10 },
+        { codigo_barra: "7033017658", precio: 678.50 },
+        { codigo_barra: "70330176584", precio: 1845.95 },
+        { codigo_barra: "70330176607", precio: 2599.99 },
+        { codigo_barra: "4005400926215", precio: 730.00 },
+        { codigo_barra: "4549526608933", precio: 999.95 },
+        { codigo_barra: "4549526607219", precio: 1400.30 },
+        { codigo_barra: "7795513177822", precio: 230.40 },
+        { codigo_barra: "7792621083649", precio: 4200.75 },
+        { codigo_barra: "7792621128760", precio: 975.90 },
+        { codigo_barra: "7798160260633", precio: 1999.99 },
+        { codigo_barra: "7798160260749", precio: 385.00 },
+        { codigo_barra: "7798004930036", precio: 3245.25 },
+        { codigo_barra: "7798004930029", precio: 670.75 },
+        { codigo_barra: "6932653908881", precio: 2100.60 },
+        { codigo_barra: "7794765003521", precio: 525.30 },
+        { codigo_barra: "7796191523406", precio: 820.20 },
+        { codigo_barra: "21001400728", precio: 1199.49 },
+        { codigo_barra: "7796893021965", precio: 1645.00 },
+        { codigo_barra: "7792533000956", precio: 307.70 },
+        { codigo_barra: "7798047120685", precio: 750.00 },
+        { codigo_barra: "7794765000742", precio: 1860.45 },
+        { codigo_barra: "6945410412156", precio: 1045.99 },
+        { codigo_barra: "635468112301", precio: 278.30 },
+        { codigo_barra: "7798047120128", precio: 1920.80 },
+        { codigo_barra: "6923794420783", precio: 3650.00 },
+        { codigo_barra: "4716982060333", precio: 970.90 },
+        { codigo_barra: "7796728000271", precio: 630.45 },
+        { codigo_barra: "6920620009082", precio: 2380.00 },
+        { codigo_barra: "6940843171793", precio: 845.65 },
+        { codigo_barra: "6926474634746", precio: 1075.30 },
+        { codigo_barra: "4710268258827", precio: 900.00 },
+        { codigo_barra: "8072018053011", precio: 510.50 },
+        { codigo_barra: "8072021062901", precio: 1675.40 },
+        { codigo_barra: "740617309720", precio: 720.00 },
+        { codigo_barra: "91163251323", precio: 410.10 },
+        { codigo_barra: "7793198133010", precio: 2940.00 },
+        { codigo_barra: "5993102218945", precio: 889.80 },
+        { codigo_barra: "4007817106525", precio: 1425.20 },
+        { codigo_barra: "70330408982", precio: 960.00 },
+        { codigo_barra: "4015000090056", precio: 1899.99 },
+        { codigo_barra: "7792216856511", precio: 330.60 },
+        { codigo_barra: "7790895000430", precio: 1250.00 },
     ];
 
-    const handleCreateProvider = (createdProvider: any): void => {
-        setProvider(createdProvider.name);
-        setNewProvider(false);
-    }
+    const handleCreateProvider = async (newProviderData: any): Promise<void> => {
+        try {
+            const createdProvider = await createProveedor(newProviderData);
+            setProvider(createdProvider.name);  // o el campo que quieras mostrar
+            setNewProvider(false);
+            setShowCreateSuccessModal(true);
+            setTimeout(() => {
+                setShowCreateSuccessModal(false);
+            }, 2000);
+        } catch (error) {
+            console.error('Error al crear proveedor:', error);
+        }
+    };
+
     return (
         <Background>
             {!newProvider && !selectProvider && !updatePrices && (
@@ -70,7 +128,7 @@ const UpdatePricesScreen: React.FC = () => {
                         </TouchableOpacity>
                         {provider && (
                             <>
-                                <FilterTag value={provider} onDelete={() => setProvider('')} />
+                                <FilterTag value={provider.nombre} onDelete={() => setProvider('')} />
                                 <TouchableOpacity
                                     style={[
                                         styles.largeButton,
@@ -116,6 +174,7 @@ const UpdatePricesScreen: React.FC = () => {
             }
             {
                 newProvider && (
+
                     <NewProviderCard onCreate={handleCreateProvider} onBack={() => setNewProvider(false)}></NewProviderCard>
                 )
             }
@@ -127,15 +186,22 @@ const UpdatePricesScreen: React.FC = () => {
             {
                 updatePrices && (
                     <UpdatePricesListCard onBack={() => setUpdatePrices(false)} document={document} onUpdate={() => {
+                        setProvider(null);
                         setVisible(true);
 
                         setTimeout(() => {
                             setVisible(false);
                             setUpdatePrices(false);
                         }, 2500);
-                    }}></UpdatePricesListCard>
+                    }} provider={provider}></UpdatePricesListCard>
                 )}
             <>
+                {/* Modal de creación exitosa */}
+                <Modal visible={showCreateSuccessModal} transparent animationType="fade">
+                    <View style={styles.modalOverlay}>
+                        <CustomModal message="Creación de Proveedor exitosa" />
+                    </View>
+                </Modal>
                 <Modal visible={visible} transparent={true} animationType="fade">
                     <View style={styles.modalOverlay}>
                         <CustomModal message="Los precios han sido actualizados correctamente" />
